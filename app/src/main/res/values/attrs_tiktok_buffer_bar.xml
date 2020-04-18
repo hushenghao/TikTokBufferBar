@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TikTokBufferBar">
+        <attr name="bar_color" format="color" />
+        <attr name="bar_end_color" format="color" />
+        <attr name="bar_min_width" format="dimension" />
+        <attr name="bar_height" format="dimension" />
+        <attr name="anim_duration" format="integer" />
+        <attr name="anim_delay" format="integer" />
+    </declare-styleable>
+</resources>
