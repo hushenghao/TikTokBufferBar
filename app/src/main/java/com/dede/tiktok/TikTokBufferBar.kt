@@ -47,7 +47,6 @@ class TikTokBufferBar : View, ValueAnimator.AnimatorUpdateListener, Runnable,
         val arrays = context?.obtainStyledAttributes(attrs, R.styleable.TikTokBufferBar)
         if (arrays != null) {
             barColor = arrays.getColor(R.styleable.TikTokBufferBar_bar_color, barColor)
-            Log.i("TikTokBufferBar", ": " + barColor)
             barHeight =
                 arrays.getDimensionPixelSize(R.styleable.TikTokBufferBar_bar_height, barHeight)
             barEndColor = arrays.getColor(R.styleable.TikTokBufferBar_bar_end_color, barEndColor)
@@ -66,7 +65,6 @@ class TikTokBufferBar : View, ValueAnimator.AnimatorUpdateListener, Runnable,
 
         paint.strokeWidth = barHeight.toFloat()
 
-//        post(this)// 开始动画哦
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -136,6 +134,7 @@ class TikTokBufferBar : View, ValueAnimator.AnimatorUpdateListener, Runnable,
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
+        anim.startDelay = 0
         anim.start()
     }
 
@@ -149,7 +148,8 @@ class TikTokBufferBar : View, ValueAnimator.AnimatorUpdateListener, Runnable,
 
     override fun onAnimationEnd(animation: Animator?) {
         if (ViewCompat.isAttachedToWindow(this) && visibility == VISIBLE) {
-            handler.postDelayed(this, animDelay)
+            anim.startDelay = animDelay
+            anim.start()
         }
     }
 
