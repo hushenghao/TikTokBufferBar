@@ -9,23 +9,31 @@ import android.graphics.drawable.Drawable
 import android.view.animation.LinearInterpolator
 import androidx.annotation.ColorInt
 import androidx.annotation.IntRange
+import kotlin.math.max
 
 class TikTokBufferDrawable : Drawable(), Animatable,
     ValueAnimator.AnimatorUpdateListener, Animator.AnimatorListener {
 
+    companion object {
+        private const val DEFAULT_BAR_HEIGHT = 5
+        private const val DEFAULT_BAR_MIN_WIDTH = 200
+        private const val DEFAULT_ANIM_DURATION = 500L
+        private const val DEFAULT_ANIM_DELAY = 100L
+    }
+
     private var barColor = Color.WHITE
     private var barEndColor: Int
-    private var min = 200
+    private var min = DEFAULT_BAR_MIN_WIDTH
     private val paintEndColor: Int
     private val a = 10
-    private var animDelay = 100L
+    private var animDelay = DEFAULT_ANIM_DELAY
 
     private val argbEvaluator = ArgbEvaluator()
     private val anim: ValueAnimator = ValueAnimator.ofFloat(0f, 1f)
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     init {
-        anim.duration = 500
+        anim.duration = DEFAULT_ANIM_DURATION
         anim.interpolator = LinearInterpolator()
         anim.repeatMode = ValueAnimator.RESTART
         anim.addUpdateListener(this)
@@ -36,17 +44,16 @@ class TikTokBufferDrawable : Drawable(), Animatable,
     }
 
     private fun getAlphaColor(@IntRange(from = 0, to = 255) alpha: Int): Int {
-        return Color.argb(
-            alpha,
-            Color.red(barColor),
-            Color.green(barColor),
-            Color.blue(barColor)
-        )
+        return Color.argb(alpha, Color.red(barColor), Color.green(barColor), Color.blue(barColor))
     }
 
-    override fun setBounds(left: Int, top: Int, right: Int, bottom: Int) {
-        super.setBounds(left, top, right, bottom)
-        paint.strokeWidth = bounds.height().toFloat()
+    private fun getBarHeight(): Int {
+        return max(bounds.height(), DEFAULT_BAR_HEIGHT)
+    }
+
+    override fun onBoundsChange(bounds: Rect) {
+        super.onBoundsChange(bounds)
+        paint.strokeWidth = getBarHeight().toFloat()
     }
 
     override fun getIntrinsicWidth(): Int {
@@ -54,7 +61,7 @@ class TikTokBufferDrawable : Drawable(), Animatable,
     }
 
     override fun getIntrinsicHeight(): Int {
-        return bounds.height()
+        return getBarHeight()
     }
 
     fun setStartDelay(@IntRange(from = 0) delay: Long) {
@@ -112,7 +119,7 @@ class TikTokBufferDrawable : Drawable(), Animatable,
     }
 
     override fun getOpacity(): Int {
-        return PixelFormat.TRANSPARENT
+        return PixelFormat.OPAQUE
     }
 
     override fun unscheduleSelf(what: Runnable) {
@@ -121,8 +128,8 @@ class TikTokBufferDrawable : Drawable(), Animatable,
     }
 
     override fun scheduleSelf(what: Runnable, `when`: Long) {
-        start()
         super.scheduleSelf(what, `when`)
+        start()
     }
 
     override fun setVisible(visible: Boolean, restart: Boolean): Boolean {
